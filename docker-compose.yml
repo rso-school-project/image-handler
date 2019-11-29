@@ -1,0 +1,25 @@
+version: "3.7"
+services:
+
+  uploader:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: uploader
+    ports: 
+      - "80:80"
+    environment:
+      - MODULE_NAME=image_uploader
+      - ETCD_HOST=etcd
+      - ETCD_PORT=2379
+    depends_on:
+      - etcd
+
+  etcd:
+    image: bitnami/etcd:latest
+    container_name: etcd
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+    ports:
+      - 2379:2379
