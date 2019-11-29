@@ -10,7 +10,7 @@ variables:
 
   # script variable
   - name: DOCKER_IMAGE
-    value: 'timotejgale/image-uploader:1.0.0'
+    value: 'timotejgale/image-handler:1.0.0'
 
 steps:
 - task: UsePythonVersion@0

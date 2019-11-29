@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from image_uploader import settings
+from image_handler import settings
 
 router = APIRouter()
 
