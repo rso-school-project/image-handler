@@ -20,7 +20,7 @@ else:
         os.environ[config_var_name] = value
 
     # this import must be after we set environment variables from the etcd.
-    from image_comments import settings
+    from image_handler import settings
 
     def etcd_watch_callback(event):
         etcd_key, etcd_value = event.key.decode('utf-8'), event.value.decode('utf-8')
