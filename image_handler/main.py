@@ -3,7 +3,7 @@ from starlette_prometheus import metrics, PrometheusMiddleware
 
 from .routers import handler
 
-VERSION = '1.0.0'
+VERSION = '1.1.0'
 API_VERSION = 'v1'
 PREFIX = f'/api/{API_VERSION}/images'
 
