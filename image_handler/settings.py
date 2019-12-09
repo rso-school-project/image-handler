@@ -10,4 +10,3 @@ config = Config(os.path.abspath(os.path.join(os.path.dirname(__file__), '.env'))
 # we get them from project lvl environment variables.
 config_x = config('config_x', cast=str, default='This is default for X')
 config_y = config('config_y', cast=str, default='This is default for Y')
-
