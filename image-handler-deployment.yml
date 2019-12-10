@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-handler
+  namespace: rso
+  labels:
+    app: image-handler
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: image-handler
+  template:
+    metadata:
+      labels:
+        app: image-handler
+    spec:
+      containers:
+      - image: jakakokosar/image-handler:1.1.0
+        name: image-handler
+        env:
+          - name: MODULE_NAME
+            value: image_handler
+        livenessProbe:
+          httpGet:
+            path: /health/live
+          initialDelaySeconds: 20
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+          initialDelaySeconds: 20
+          periodSeconds: 3
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: image-handler-service
+  namespace: rso
+  labels:
+    app: image-handler
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      protocol: TCP
+  selector:
+    app: image-handler
