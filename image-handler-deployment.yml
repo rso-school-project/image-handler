@@ -22,14 +22,20 @@ spec:
         env:
           - name: MODULE_NAME
             value: image_handler
+        ports:
+          - containerPort: 8000
+            name: server
+            protocol: TCP
         livenessProbe:
           httpGet:
             path: /health/live
+            port: server
           initialDelaySeconds: 20
           periodSeconds: 3
         readinessProbe:
           httpGet:
             path: /health/ready
+            port: server
           initialDelaySeconds: 20
           periodSeconds: 3
 
@@ -47,5 +53,6 @@ spec:
   ports:
     - port: 8000
       protocol: TCP
+      targetPort: server
   selector:
     app: image-handler
