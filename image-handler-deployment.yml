@@ -22,6 +22,8 @@ spec:
         env:
           - name: MODULE_NAME
             value: image_handler
+          - name: PORT
+            value: "8000"
         ports:
           - containerPort: 8000
             name: server
