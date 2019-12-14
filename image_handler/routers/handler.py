@@ -18,7 +18,7 @@ def image_generator():
     return [{'id': index, 'name': "image" + str(index), 'path': "/path/" + str(index)} for index in range(1, 6)]
 
 
-@router.get('/')
+@router.get('/images')
 def list_images():
     return image_generator()
 
