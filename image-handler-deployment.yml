@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: image-handler
-  namespace: rso
+#  namespace: rso
   labels:
     app: image-handler
 
@@ -17,7 +17,7 @@ spec:
         app: image-handler
     spec:
       containers:
-      - image: jakakokosar/image-handler:1.1.0
+      - image: jakakokosar/image-handler:1.1.1
         name: image-handler
         env:
           - name: MODULE_NAME
@@ -47,7 +47,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: image-handler-service
-  namespace: rso
+#  namespace: rso
   labels:
     app: image-handler
 spec:
