@@ -1,3 +1,5 @@
+import time
+
 from fastapi import APIRouter
 from func_timeout import func_set_timeout
 
@@ -16,12 +18,18 @@ def image_generator():
     return [{'id': index, 'name': "image" + str(index), 'path': "/path/" + str(index)} for index in range(1, 6)]
 
 
-def image_commnets_fallback():
-    return {'default': 'Timeout: comments unavailable'}
-
-
 @router.get('/')
-@fallback(fallback_function=image_commnets_fallback)
-@func_set_timeout(3)
-async def list_images():
+def list_images():
     return image_generator()
+
+
+def test_fallback():
+    return {'Detail': 'This is fallback function. Request timed-out'}
+
+
+@router.get('/timeout/{seconds}')
+@fallback(fallback_function=test_fallback)
+@func_set_timeout(3)
+def test_timeout_feature(seconds: str):
+    time.sleep(float(seconds))
+    return {'Timeout': seconds, 'Detail': 'Request did not time-out.'}
