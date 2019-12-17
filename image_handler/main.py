@@ -12,7 +12,7 @@ app = FastAPI(
     title='image-handler',
     description='Microservice for handling images.',
     version=VERSION,
-    openapi_url=f'/image-handler{PREFIX}/openapi.json',
+    # openapi_url=f'/image-handler{PREFIX}/openapi.json',
 )
 
 

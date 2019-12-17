@@ -21,7 +21,7 @@ spec:
           secret:
             secretName: google-cloud-key
       containers:
-      - image: jakakokosar/image-handler:1.4.1
+      - image: jakakokosar/image-handler:1.4.2
         name: image-handler
         volumeMounts:
           - name: google-cloud-key

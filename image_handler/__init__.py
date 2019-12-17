@@ -1,7 +1,7 @@
 import os
 import etcd3
 
-VERSION = '1.4.1'
+VERSION = '1.4.2'
 MODULE = 'image_handler'
 API_VERSION = 'v1'
 PREFIX = f'/api/{API_VERSION}'

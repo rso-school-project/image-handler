@@ -10,7 +10,7 @@ variables:
 
   # script variable
   - name: DOCKER_IMAGE
-    value: 'jakakokosar/image-handler:1.4.1'
+    value: 'jakakokosar/image-handler:1.4.2'
 
 steps:
 - task: UsePythonVersion@0
