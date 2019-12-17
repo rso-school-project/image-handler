@@ -1,11 +1,17 @@
 import time
 
-from fastapi import APIRouter
+from typing import List
+from fastapi import APIRouter, Depends
+from starlette.requests import Request
 from func_timeout import func_set_timeout
+from sqlalchemy.orm import Session
 
 from image_handler import settings
 from image_handler.utils import fallback
+from image_handler.database import crud, models, schemas, get_db, engine
 
+
+# models.Base.metadata.create_all(bind=engine, checkfirst=True)
 router = APIRouter()
 
 
@@ -14,13 +20,14 @@ async def test_configs():
     return {"Config for X:": f"{settings.config_x}", "Config for Y:": f"{settings.config_y}"}
 
 
-def image_generator():
-    return [{'id': index, 'name': "image" + str(index), 'path': "/path/" + str(index)} for index in range(1, 6)]
-
-
-@router.get('/images')
-def list_images():
-    return image_generator()
+@router.get('/images', response_model=List[schemas.Image])
+def read_images(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    # NOTE: this is importat for logging.
+    #       we get unique_log_id as a header in request object.
+    #       unique_log_id = request.header.get('unique_log_id')
+    #       Use this log id, when calling another microservice from here.
+    images = crud.get_images(db, skip=skip, limit=limit)
+    return images
 
 
 def test_fallback():

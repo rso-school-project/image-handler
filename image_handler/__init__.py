@@ -1,18 +1,21 @@
 import os
 import etcd3
-import logging
 
-ETCD_HOST_URL = os.environ.get('ETCD_HOST', 'etcd')
-ETCD_HOST_PORT = os.environ.get('ETCD_PORT', '2379')
+VERSION = '1.1.1'
+MODULE = 'image_handler'
+API_VERSION = 'v1'
+PREFIX = f'/api/{API_VERSION}'
 
-logger = logging.getLogger('uvicorn')
+ETCD_HOST_URL = os.environ.get('ETCD_HOST_URL', 'etcd')
+ETCD_HOST_PORT = os.environ.get('ETCD_HOST_PORT', '2379')
+
 
 try:
     etcd = etcd3.client(host=ETCD_HOST_URL, port=ETCD_HOST_PORT)
     etcd.status()
-except etcd3.exceptions.ConnectionFailedError as ex:
+except etcd3.exceptions.ConnectionFailedError:
     # Raise warning that etcd connection failed.
-    logger.info(f"could not connect to ETCD server using: url:{ETCD_HOST_URL} and port:{ETCD_HOST_PORT}")
+    pass
 else:
     # on initial setup populate environment variables from config server.
     for value, metadata in etcd.get_range(range_start=f'/{__name__}/', range_end=f'/{__name__}0'):

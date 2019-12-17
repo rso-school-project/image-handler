@@ -1,10 +1,15 @@
 """ Utils module """
+import etcd3
 
 from functools import wraps
 from func_timeout import FunctionTimedOut
 
 from starlette.responses import JSONResponse, Response
 from starlette.requests import Request
+
+
+from image_handler import ETCD_HOST_PORT, ETCD_HOST_URL
+from image_handler.database import get_db
 
 
 def fallback(fallback_function):
@@ -29,11 +34,30 @@ def fallback(fallback_function):
 #   - https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 
 
+def health_check_failure():
+    return {'status': 'fail'}
+
+
+@fallback(fallback_function=health_check_failure)
+def check_etcd_connection():
+    etcd = etcd3.client(host=ETCD_HOST_URL, port=ETCD_HOST_PORT)
+    etcd.status()
+    return {'status': 'pass'}
+
+
+@fallback(fallback_function=health_check_failure)
+def check_postgres_connection():
+    get_db()
+    return {'status': 'pass'}
+
+
 def check_liveness(request: Request) -> Response:
-    data = {'status': 'pass', 'checks': []}
+    data = {'status': 'pass', 'checks': {'etcd:status': [check_etcd_connection()],
+                                         'postgres:status': [check_etcd_connection()]}}
     return JSONResponse(content=data, media_type='application/health+json')
 
 
 def check_readiness(request: Request) -> Response:
-    data = {'status': 'pass', 'checks': []}
+    data = {'status': 'pass', 'checks': {'etcd:status': [check_etcd_connection()],
+                                         'postgres:status': [check_etcd_connection()]}}
     return JSONResponse(content=data, media_type='application/health+json')
