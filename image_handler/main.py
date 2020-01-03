@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from starlette_prometheus import metrics, PrometheusMiddleware
 from starlette.requests import Request
+#from starlette.middleware.cors import CORSMiddleware
 
 from . import VERSION, PREFIX
 from .routers import handler
@@ -15,6 +16,18 @@ app = FastAPI(
     # openapi_url=f'/image-handler{PREFIX}/openapi.json',
 )
 
+# origins = [
+#     "http://localhost",
+#     "http://localhost:3000",
+# ]
+
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 @app.middleware("http")
 async def logger_middleware(request: Request, call_next):

@@ -30,6 +30,16 @@ def read_images(request: Request, skip: int = 0, limit: int = 100, db: Session =
     return images
 
 
+@router.get('/images/user/{user_id}', response_model=List[schemas.Image])
+def read_user_images(user_id: int, db: Session = Depends(get_db)):
+    # NOTE: this is importat for logging.
+    #       we get unique_log_id as a header in request object.
+    #       unique_log_id = request.header.get('unique_log_id')
+    #       Use this log id, when calling another microservice from here.
+    images = crud.get_images_by_user(db, user_id)
+    return images
+
+
 def test_fallback():
     return {'Detail': 'This is fallback function. Request timed-out'}
 
