@@ -1,10 +1,11 @@
 import time
 
 from typing import List
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Header
 from starlette.requests import Request
 from func_timeout import func_set_timeout
 from sqlalchemy.orm import Session
+import requests
 
 from image_handler import settings
 from image_handler.utils import fallback
@@ -22,22 +23,65 @@ async def test_configs():
 
 @router.get('/images', response_model=List[schemas.Image])
 def read_images(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    # NOTE: this is importat for logging.
-    #       we get unique_log_id as a header in request object.
-    #       unique_log_id = request.header.get('unique_log_id')
-    #       Use this log id, when calling another microservice from here.
     images = crud.get_images(db, skip=skip, limit=limit)
     return images
 
 
-@router.get('/images/user/{user_id}', response_model=List[schemas.Image])
-def read_user_images(user_id: int, db: Session = Depends(get_db)):
-    # NOTE: this is importat for logging.
-    #       we get unique_log_id as a header in request object.
-    #       unique_log_id = request.header.get('unique_log_id')
-    #       Use this log id, when calling another microservice from here.
+@router.get('/images/user/{user_id}')
+def read_user_images(request: Request, user_id: int, db: Session = Depends(get_db)):
+    unique_log_id = request.headers.get("unique_log_id", "")
+
     images = crud.get_images_by_user(db, user_id)
-    return images
+
+    # Get image comments.
+    try:
+        comments = []
+        for image in images:
+            res = requests.get('http://image-comments-service:8001/api/v1/comments/image/' + str(image.id), headers={'unique_log_id': unique_log_id})
+            res.raise_for_status()
+            comments.append(res.json())
+    except:
+        comments = None
+    
+    # Get shared users.
+    try:
+        share = []
+        for image in images:
+            res = requests.get('http://image-sharing-service:8003/api/v1/share/image/' + str(image.id), headers={'unique_log_id': unique_log_id})
+            res.raise_for_status()
+            share.append(res.json())
+    except:
+        share = None
+
+    return { "images": images, "comments": comments, "share": share }
+
+
+@router.get('/shared-images/user/{user_id}')
+def read_user_images(request: Request, user_id: int, db: Session = Depends(get_db)):
+    unique_log_id = request.headers.get("unique_log_id", "")
+    # Get images shared by this user.
+    res = requests.get('http://image-sharing-service:8003/api/v1/share/user/' + str(user_id), headers={'unique_log_id': unique_log_id})
+    res.raise_for_status()
+    shared = res.json()
+
+    # Retrieve corresponding image records.
+    images = []
+    for share in shared:
+        image = crud.get_image_by_id(db, share["image_id"])
+        if image:
+            images.append(image)
+
+    # Get image comments.
+    try:
+        comments = []
+        for image in images:
+            res = requests.get('http://image-comments-service:8001/api/v1/comments/image/' + str(image.id), headers={'unique_log_id': unique_log_id})
+            res.raise_for_status()
+            comments.append(res.json())
+    except:
+        comments = None
+
+    return { "images": images, "comments": comments }
 
 
 def test_fallback():
