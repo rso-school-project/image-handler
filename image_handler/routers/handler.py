@@ -35,6 +35,8 @@ def read_user_images(request: Request, user_id: int, db: Session = Depends(get_d
 
     # Get image comments.
     try:
+        if settings.config_y:
+            raise
         comments = []
         for image in images:
             res = requests.get('http://image-comments-service:8001/api/v1/comments/image/' + str(image.id), headers={'unique_log_id': unique_log_id})
@@ -73,6 +75,8 @@ def read_user_images(request: Request, user_id: int, db: Session = Depends(get_d
 
     # Get image comments.
     try:
+        if settings.config_y:
+            raise
         comments = []
         for image in images:
             res = requests.get('http://image-comments-service:8001/api/v1/comments/image/' + str(image.id), headers={'unique_log_id': unique_log_id})
