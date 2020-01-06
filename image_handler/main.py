@@ -3,6 +3,10 @@ from starlette_prometheus import metrics, PrometheusMiddleware
 from starlette.requests import Request
 #from starlette.middleware.cors import CORSMiddleware
 
+import graphene
+from starlette.graphql import GraphQLApp
+from image_handler.database import crud, get_db
+
 from . import VERSION, PREFIX
 from .routers import handler
 from .utils import check_liveness, check_readiness
@@ -47,3 +51,26 @@ app.include_router(
 
 app.add_route('/health/live', check_liveness)
 app.add_route('/health/ready', check_readiness)
+
+
+class Image(graphene.ObjectType):
+    id = graphene.Int()
+    user_id = graphene.Int()
+    file_name = graphene.String()
+    file_hash = graphene.String()
+    tags = graphene.String()
+
+class Query(graphene.ObjectType):
+    images = graphene.List(Image, user_id=graphene.Int(default_value=None))
+
+    def resolve_images(self, context, **kwargs):
+        user_id = kwargs.get('user_id')
+
+        if user_id is not None:
+            # Get images of some user.
+            return crud.get_images_by_user(next(get_db()), user_id)
+
+        # Get all images.
+        return crud.get_images(next(get_db()))
+
+app.add_route("/", GraphQLApp(schema=graphene.Schema(query=Query)))
