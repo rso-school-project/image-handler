@@ -73,4 +73,4 @@ class Query(graphene.ObjectType):
         # Get all images.
         return crud.get_images(next(get_db()))
 
-app.add_route("/", GraphQLApp(schema=graphene.Schema(query=Query)))
+app.add_route("/graphql/", GraphQLApp(schema=graphene.Schema(query=Query)))
