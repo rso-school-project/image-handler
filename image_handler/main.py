@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from starlette_prometheus import metrics, PrometheusMiddleware
 from starlette.requests import Request
+from starlette.responses import RedirectResponse
 #from starlette.middleware.cors import CORSMiddleware
 
 import graphene
@@ -73,4 +74,11 @@ class Query(graphene.ObjectType):
         # Get all images.
         return crud.get_images(next(get_db()))
 
-app.add_route("/graphql/", GraphQLApp(schema=graphene.Schema(query=Query)))
+app.add_route("/graphql", GraphQLApp(schema=graphene.Schema(query=Query)))
+
+def redirect(req):
+    url = "https://34.65.148.232/image-handler/graphql"
+    response = RedirectResponse(url=url)
+    return response
+
+app.add_route("/", redirect)
