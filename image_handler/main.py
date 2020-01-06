@@ -75,10 +75,11 @@ class Query(graphene.ObjectType):
         return crud.get_images(next(get_db()))
 
 app.add_route("/graphql", GraphQLApp(schema=graphene.Schema(query=Query)))
+app.add_route("/image-handler/graphql", GraphQLApp(schema=graphene.Schema(query=Query)))
 
-def redirect(req):
-    url = "https://34.65.148.232/image-handler/graphql"
-    response = RedirectResponse(url=url)
-    return response
+# def redirect(req):
+#     url = "https://34.65.148.232/image-handler/graphql"
+#     response = RedirectResponse(url=url)
+#     return response
 
-app.add_route("/", redirect)
+# app.add_route("/", redirect)
