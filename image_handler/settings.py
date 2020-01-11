@@ -11,7 +11,7 @@ config = Config(os.path.abspath(os.path.join(os.path.dirname(__file__), '.env'))
 # for all other settings we first try to fetch them from etcd server. If not found/available
 # we get them from project lvl environment variables.
 config_x = config('config_x', cast=str, default='This is default for X')
-config_y = config('config_y', cast=bool, default=False)
+comments_disabled = config('comments_disabled', cast=bool, default=False)
 
 DB_URL = config('DB_URL', cast=str, default='localhost')
 DB_USERNAME = config('DB_USERNAME', cast=str, default='postgres')

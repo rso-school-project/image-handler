@@ -29,6 +29,10 @@ else:
     def etcd_watch_callback(event):
         etcd_key, etcd_value = event.key.decode('utf-8'), event.value.decode('utf-8')
         # zamiži na eno oko in pojdi naprej.
+        if etcd_value == 'True':
+            etcd_value = True
+        elif etcd_value == 'False':
+            etcd_value = False
         settings.__dict__[os.path.basename(etcd_key)] = etcd_value
 
     etcd.add_watch_callback(key=f'/{__name__}/', range_end=f'/{__name__}0', callback=etcd_watch_callback)

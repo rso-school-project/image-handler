@@ -21,7 +21,7 @@ router = APIRouter()
 
 @router.get('/settings')
 async def test_configs():
-    return {"Config for X:": f"{settings.config_x}", "Config for Y:": f"{settings.config_y}"}
+    return {"Config for X:": f"{settings.config_x}", "Config for Y:": f"{settings.comments_disabled}"}
 
 
 @router.get('/images', response_model=List[schemas.Image])
@@ -38,7 +38,7 @@ def read_user_images(request: Request, user_id: int, db: Session = Depends(get_d
 
     # Get image comments.
     try:
-        if settings.config_y:
+        if settings.comments_disabled:
             raise
         comments = []
         for image in images:
@@ -78,7 +78,7 @@ def read_user_images(request: Request, user_id: int, db: Session = Depends(get_d
 
     # Get image comments.
     try:
-        if settings.config_y:
+        if settings.comments_disabled:
             raise
         comments = []
         for image in images:
